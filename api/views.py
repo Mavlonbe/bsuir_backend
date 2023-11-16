@@ -1,7 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import NoteSerializer
+from .serializers import EventSerializer
 from .models import Note
+from .utils import read_agents
 
 @api_view(['GET'])
 def getRoutes(request):
@@ -25,38 +26,22 @@ def getRoutes(request):
     
     return Response(routes)
 
-@api_view(['GET'])
-def getNotes(request):
-    notes = Note.objects.all()
-    serializer = NoteSerializer(notes, many=True)
-    return Response(serializer.data)
-
-@api_view(['GET'])
-def getNote(request, pk):
-    note = Note.objects.get(id=pk)
-    serializer = NoteSerializer(note, many=False)
-    return Response(serializer.data)
 
 @api_view(['POST'])
-def createNote(request):
-    data = request.data 
-    serializer = NoteSerializer(data=data, many=False).is_valid()
-    return Response(data, status=200)
-
-@api_view(['PUT'])
-def updateNote(request, pk):
+def takeEvent(request):
     data = request.data 
     
-    note = Note.objects.get(id=pk)
+    body = EventSerializer(data=data, many=False)
     
-    serializer = NoteSerializer(note, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
+    if body.is_valid():
+        agents = read_agents()
         
-    return Response(serializer.data)
-
-@api_view(['DELETE'])
-def deleteNote(request, pk):
-    note = Note.objects.get(id=pk)
-    note.delete()
-    return Response('Note was deleted!')
+        for agent in agents:
+            result = agent.trigger(body)
+            
+            if result != None:
+                return Response(result, status=200)
+            
+        return Response("None triggers was found", status=200)
+    
+    return Response(status=400)
