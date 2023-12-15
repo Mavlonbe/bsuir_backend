@@ -4,28 +4,6 @@ from .serializers import EventSerializer
 from .models import Note
 from .utils import read_agents
 
-@api_view(['GET'])
-def getRoutes(request):
-    routes = [
-        {'Endpoint': '/notes/',
-         'method': 'GET',
-         'body': None,
-         'description': 'Returns an array of notes'},
-        
-        {'Endpoint': '/notes/id',
-        'method': 'GET',
-        'body': None,
-        'description': 'Returns a single note object'},
-        
-        {'Endpoint': '/notes/create/',
-        'method': 'POST',
-        'body': {'body': ""},
-        'description': 'Creates new note with data sent in post req'},
-    ]
-    
-    
-    return Response(routes)
-
 
 @api_view(['POST'])
 def takeEvent(request):
@@ -42,6 +20,7 @@ def takeEvent(request):
             if result != None:
                 return Response(result, status=200)
             
-        return Response("None triggers was found", status=200)
+        return Response("None agents was found for this event type", status=404)
     
-    return Response(status=400)
+    return Response("Bad request", status=400)
+
