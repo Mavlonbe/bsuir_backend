@@ -10,4 +10,4 @@ COPY . /usr/src/app/
 
 ENV SERVICE_STATE production
 
-CMD ["gunicorn", "-b 0.0.0.0:23335", "notes.asgi:application"]
+CMD ["uvicorn", "notes.asgi:application", '--host "0.0.0.0"', "--port 23335"]
