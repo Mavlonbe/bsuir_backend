@@ -5,7 +5,7 @@ from typing import List
 from api.serializers import EventSerializer
 
 class Agent(object):
-    client = Graph("bolt://localhost:7687", auth=("neo4j", "cnbem5ug"))
+    client = Graph("bolt://185.74.7.104:23338", auth=("neo4j", "cnbem5ug"))
     
     def search_recipes(self, ingredients: EventSerializer) -> dict:
         recipes = self.client.run(
